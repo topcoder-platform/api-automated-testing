@@ -1,0 +1,26 @@
+{
+  "name": "tc-api-testing-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "TCSCODER",
+  "license": "none",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "config": "^3.3.6",
+    "handlebars": "^4.7.7",
+    "joi": "^17.4.0",
+    "lodash": "^4.17.21",
+    "newman": "^5.2.3",
+    "newman-reporter-html": "^1.0.5",
+    "tc-core-library-js": "appirio-tech/tc-core-library-js.git#v2.6.4",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
+}
