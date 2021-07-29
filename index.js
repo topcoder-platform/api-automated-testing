@@ -122,22 +122,28 @@ async function runTests (requests, collectionPath, environmentPath) {
   const userToken = await envHelper.getUserToken()
   let originalEnvVars = [
     { key: 'm2m_token', value: `Bearer ${m2mToken}` },
+    { key: 'M2M_TOKEN', value: `Bearer ${m2mToken}` },
     { key: 'admin_token', value: `Bearer ${adminToken}` },
     { key: 'manager_token', value: `Bearer ${managerToken}` },
     { key: 'copilot_token', value: `Bearer ${copilotToken}` },
     { key: 'user_token', value: `Bearer ${userToken}` },
   ]
-  // project-api sets `Bearer` prefix itself
-  if(require(environmentPath).name === "project-api") {
+  // Apps that set `Bearer ` prefix themselves
+  const haveBearerPrefix = [
+    'Ubahn-api',
+    'project-api'
+  ];
+  if (haveBearerPrefix.includes(require(environmentPath).name)) {
     originalEnvVars = [
       { key: 'm2m_token', value: `${m2mToken}` },
+      { key: 'M2M_TOKEN', value: `${m2mToken}` },
       { key: 'admin_token', value: `${adminToken}` },
       { key: 'manager_token', value: `${managerToken}` },
       { key: 'copilot_token', value: `${copilotToken}` },
       { key: 'user_token', value: `${userToken}` },
     ]
   }
-
+  console.log({originalEnvVars})
   const options = {
     collection: collectionPath,
     exportEnvironment: environmentPath,
