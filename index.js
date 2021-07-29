@@ -120,13 +120,24 @@ async function runTests (requests, collectionPath, environmentPath) {
   const managerToken = await envHelper.getManagerToken()
   const copilotToken = await envHelper.getCopilotToken()
   const userToken = await envHelper.getUserToken()
-  const originalEnvVars = [
+  let originalEnvVars = [
     { key: 'm2m_token', value: `Bearer ${m2mToken}` },
     { key: 'admin_token', value: `Bearer ${adminToken}` },
     { key: 'manager_token', value: `Bearer ${managerToken}` },
     { key: 'copilot_token', value: `Bearer ${copilotToken}` },
-    { key: 'user_token', value: `Bearer ${userToken}` }
+    { key: 'user_token', value: `Bearer ${userToken}` },
   ]
+  // project-api sets `Bearer` prefix itself
+  if(require(environmentPath).name === "project-api") {
+    originalEnvVars = [
+      { key: 'm2m_token', value: `${m2mToken}` },
+      { key: 'admin_token', value: `${adminToken}` },
+      { key: 'manager_token', value: `${managerToken}` },
+      { key: 'copilot_token', value: `${copilotToken}` },
+      { key: 'user_token', value: `${userToken}` },
+    ]
+  }
+
   const options = {
     collection: collectionPath,
     exportEnvironment: environmentPath,
