@@ -164,8 +164,18 @@ async function runTests (requests, collectionPath, environmentPath) {
       { key: 'ATTRIBUTE_ID_BY_ADMIN', value: config.ATTRIBUTE_ID_BY_ADMIN },
       { key: 'ATTRIBUTE_ID_BY_TESTER', value: config.ATTRIBUTE_ID_BY_TESTER },
       { key: 'ACHIEVEMENT_ID_BY_ADMIN', value: config.ACHIEVEMENT_ID_BY_ADMIN },
-      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER }
+      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER },
     )
+  } else if (testCases === 'project-api') {
+    originalEnvVars.push(
+      { key: 'ADMIN_ID', value: config.ADMIN_ID },
+      { key: 'USER_ID', value: config.USER_ID },
+      { key: 'COPILOT_ID', value: config.COPILOT_ID },
+      { key: 'POSTMAN_UPLOADED_FILES_PATH', value: config.POSTMAN_UPLOADED_FILES_PATH },
+      { key: 'POSTMAN_S3_BUCKET', value: config.POSTMAN_S3_BUCKET },
+    )
+  } else {
+    //
   }
 
   const options = {
