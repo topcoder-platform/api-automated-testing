@@ -114,13 +114,15 @@ async function runTests (requests, collectionPath, environmentPath) {
   await checkConfigFiles()
   const m2mToken = await envHelper.getM2MToken()
   const adminToken = await envHelper.getAdminToken()
+  const managerToken = await envHelper.getManagerToken()
   const copilotToken = await envHelper.getCopilotToken()
   const userToken = await envHelper.getUserToken()
   const originalEnvVars = [
-    { key: 'M2M_TOKEN', value: `${m2mToken}` },
-    { key: 'admin_token', value: `${adminToken}` },
-    { key: 'copilot_token', value: `${copilotToken}` },
-    { key: 'user_token', value: `${userToken}` }
+    { key: 'm2m_token', value: `Bearer ${m2mToken}` },
+    { key: 'admin_token', value: `Bearer ${adminToken}` },
+    { key: 'manager_token', value: `Bearer ${managerToken}` },
+    { key: 'copilot_token', value: `Bearer ${copilotToken}` },
+    { key: 'user_token', value: `Bearer ${userToken}` }
   ]
   const options = {
     collection: collectionPath,
@@ -136,7 +138,12 @@ async function runTests (requests, collectionPath, environmentPath) {
     delete require.cache[environmentPath]
     options.environment = require(environmentPath)
     options.folder = request.folder
-    options.iterationData = request.iterationData
+    options.iterationData = _.map(request.iterationData, data => {
+      if(data.requestBody) {
+        data.requestBody = JSON.stringify(data.requestBody)
+      }
+      return data
+    })
     try {
       const requestStart = Date.now()
       const results = await runner(options)
