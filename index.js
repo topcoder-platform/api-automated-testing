@@ -54,9 +54,12 @@ async function checkConfigFiles () {
     AUTH_V3_URL: Joi.string().required(),
     ADMIN_CREDENTIALS_USERNAME: Joi.string().required(),
     ADMIN_CREDENTIALS_PASSWORD: Joi.string().required(),
+    MANAGER_CREDENTIALS_USERNAME: Joi.string().required(),
+    MANAGER_CREDENTIALS_PASSWORD: Joi.string().required(),
     COPILOT_CREDENTIALS_USERNAME: Joi.string().required(),
     COPILOT_CREDENTIALS_PASSWORD: Joi.string().required(),
     USER_CREDENTIALS_USERNAME: Joi.string().required(),
+    USER_CREDENTIALS_PASSWORD: Joi.string().required(),
     WAIT_TIME: Joi.number().positive().required(),
     AUTOMATED_TESTING_REPORTERS_FORMAT:
       Joi.array().items(Joi.string().valid('cli', 'json', 'junit', 'html').required()).required()
