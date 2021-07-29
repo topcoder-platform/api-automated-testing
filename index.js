@@ -115,6 +115,7 @@ function outputResults (startTime) {
 async function runTests (requests, collectionPath, environmentPath) {
   const startTime = Date.now()
   await checkConfigFiles()
+  console.info(`\tNumber of Tests to Run: ${requests.length}\n`)
   const m2mToken = await envHelper.getM2MToken()
   const adminToken = await envHelper.getAdminToken()
   const managerToken = await envHelper.getManagerToken()
@@ -133,7 +134,8 @@ async function runTests (requests, collectionPath, environmentPath) {
     'Ubahn-api',
     'project-api'
   ];
-  if (haveBearerPrefix.includes(require(environmentPath).name)) {
+  const testCases = require(environmentPath).name
+  if (haveBearerPrefix.includes(testCases)) {
     originalEnvVars = [
       { key: 'm2m_token', value: `${m2mToken}` },
       { key: 'M2M_TOKEN', value: `${m2mToken}` },
@@ -143,7 +145,29 @@ async function runTests (requests, collectionPath, environmentPath) {
       { key: 'user_token', value: `${userToken}` },
     ]
   }
-  console.log({originalEnvVars})
+  if (testCases === 'Ubahn-api') {
+    originalEnvVars.push(
+      { key: 'USER_ID_BY_ADMIN', value: config.USER_ID_BY_ADMIN },
+      { key: 'USER_ID_BY_TESTER', value: config.USER_ID_BY_TESTER },
+      { key: 'PROVIDER_ID_BY_ADMIN', value: config.PROVIDER_ID_BY_ADMIN },
+      { key: 'PROVIDER_ID_BY_TESTER', value: config.PROVIDER_ID_BY_TESTER },
+      { key: 'SKILL_ID_BY_ADMIN', value: config.SKILL_ID_BY_ADMIN },
+      { key: 'SKILL_ID_BY_TESTER', value: config.SKILL_ID_BY_TESTER },
+      { key: 'ROLE_ID_BY_ADMIN', value: config.ROLE_ID_BY_ADMIN },
+      { key: 'ROLE_ID_BY_TESTER', value: config.ROLE_ID_BY_TESTER },
+      { key: 'ORGANIZATION_ID_BY_ADMIN', value: config.ORGANIZATION_ID_BY_ADMIN },
+      { key: 'ORGANIZATION_ID_BY_TESTER', value: config.ORGANIZATION_ID_BY_TESTER },
+      { key: 'ACHIEVEMENTS_PROVIDER_ID_BY_ADMIN', value: config.ACHIEVEMENTS_PROVIDER_ID_BY_ADMIN },
+      { key: 'ACHIEVEMENTS_PROVIDER_ID_BY_TESTER', value: config.ACHIEVEMENTS_PROVIDER_ID_BY_TESTER },
+      { key: 'ATTRIBUTE_GROUP_ID_BY_ADMIN', value: config.ATTRIBUTE_GROUP_ID_BY_ADMIN },
+      { key: 'ATTRIBUTE_GROUP_ID_BY_TESTER', value: config.ATTRIBUTE_GROUP_ID_BY_TESTER },
+      { key: 'ATTRIBUTE_ID_BY_ADMIN', value: config.ATTRIBUTE_ID_BY_ADMIN },
+      { key: 'ATTRIBUTE_ID_BY_TESTER', value: config.ATTRIBUTE_ID_BY_TESTER },
+      { key: 'ACHIEVEMENT_ID_BY_ADMIN', value: config.ACHIEVEMENT_ID_BY_ADMIN },
+      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER }
+    )
+  }
+
   const options = {
     collection: collectionPath,
     exportEnvironment: environmentPath,
