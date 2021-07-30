@@ -115,7 +115,17 @@ function outputResults (startTime) {
 async function runTests (requests, collectionPath, environmentPath) {
   const startTime = Date.now()
   await checkConfigFiles()
-  console.info(`\tNumber of Tests to Run: ${requests.length}\n`)
+  // how many tests/iterations in the requests provided ?
+  let tests = 0
+  for (req of requests) {
+    if (req.iterationData) {
+      tests += req.iterationData.length
+    } else {
+      tests += 1
+    }
+  }
+  console.info(`\t        Number of Requests to Run : ${requests.length}\n`)
+  console.info(`\tNumber of Tests/Iterations to Run : ${tests}\n`)
   const m2mToken = await envHelper.getM2MToken()
   const adminToken = await envHelper.getAdminToken()
   const managerToken = await envHelper.getManagerToken()
