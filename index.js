@@ -54,9 +54,12 @@ async function checkConfigFiles () {
     AUTH_V3_URL: Joi.string().required(),
     ADMIN_CREDENTIALS_USERNAME: Joi.string().required(),
     ADMIN_CREDENTIALS_PASSWORD: Joi.string().required(),
+    MANAGER_CREDENTIALS_USERNAME: Joi.string().required(),
+    MANAGER_CREDENTIALS_PASSWORD: Joi.string().required(),
     COPILOT_CREDENTIALS_USERNAME: Joi.string().required(),
     COPILOT_CREDENTIALS_PASSWORD: Joi.string().required(),
     USER_CREDENTIALS_USERNAME: Joi.string().required(),
+    USER_CREDENTIALS_PASSWORD: Joi.string().required(),
     WAIT_TIME: Joi.number().positive().required(),
     AUTOMATED_TESTING_REPORTERS_FORMAT:
       Joi.array().items(Joi.string().valid('cli', 'json', 'junit', 'html').required()).required()
@@ -112,16 +115,79 @@ function outputResults (startTime) {
 async function runTests (requests, collectionPath, environmentPath) {
   const startTime = Date.now()
   await checkConfigFiles()
+  // how many tests/iterations in the requests provided ?
+  let tests = 0
+  for (req of requests) {
+    if (req.iterationData) {
+      tests += req.iterationData.length
+    } else {
+      tests += 1
+    }
+  }
+  console.info(`\t        Number of Requests to Run : ${requests.length}\n`)
+  console.info(`\tNumber of Tests/Iterations to Run : ${tests}\n`)
   const m2mToken = await envHelper.getM2MToken()
   const adminToken = await envHelper.getAdminToken()
+  const managerToken = await envHelper.getManagerToken()
   const copilotToken = await envHelper.getCopilotToken()
   const userToken = await envHelper.getUserToken()
-  const originalEnvVars = [
-    { key: 'M2M_TOKEN', value: `${m2mToken}` },
-    { key: 'admin_token', value: `${adminToken}` },
-    { key: 'copilot_token', value: `${copilotToken}` },
-    { key: 'user_token', value: `${userToken}` }
+  let originalEnvVars = [
+    { key: 'm2m_token', value: `Bearer ${m2mToken}` },
+    { key: 'M2M_TOKEN', value: `Bearer ${m2mToken}` },
+    { key: 'admin_token', value: `Bearer ${adminToken}` },
+    { key: 'manager_token', value: `Bearer ${managerToken}` },
+    { key: 'copilot_token', value: `Bearer ${copilotToken}` },
+    { key: 'user_token', value: `Bearer ${userToken}` },
   ]
+  // Apps that set `Bearer ` prefix themselves
+  const haveBearerPrefix = [
+    'Ubahn-api',
+    'project-api'
+  ];
+  const testCases = require(environmentPath).name
+  if (haveBearerPrefix.includes(testCases)) {
+    originalEnvVars = [
+      { key: 'm2m_token', value: `${m2mToken}` },
+      { key: 'M2M_TOKEN', value: `${m2mToken}` },
+      { key: 'admin_token', value: `${adminToken}` },
+      { key: 'manager_token', value: `${managerToken}` },
+      { key: 'copilot_token', value: `${copilotToken}` },
+      { key: 'user_token', value: `${userToken}` },
+    ]
+  }
+  if (testCases === 'Ubahn-api') {
+    originalEnvVars.push(
+      { key: 'USER_ID_BY_ADMIN', value: config.USER_ID_BY_ADMIN },
+      { key: 'USER_ID_BY_TESTER', value: config.USER_ID_BY_TESTER },
+      { key: 'PROVIDER_ID_BY_ADMIN', value: config.PROVIDER_ID_BY_ADMIN },
+      { key: 'PROVIDER_ID_BY_TESTER', value: config.PROVIDER_ID_BY_TESTER },
+      { key: 'SKILL_ID_BY_ADMIN', value: config.SKILL_ID_BY_ADMIN },
+      { key: 'SKILL_ID_BY_TESTER', value: config.SKILL_ID_BY_TESTER },
+      { key: 'ROLE_ID_BY_ADMIN', value: config.ROLE_ID_BY_ADMIN },
+      { key: 'ROLE_ID_BY_TESTER', value: config.ROLE_ID_BY_TESTER },
+      { key: 'ORGANIZATION_ID_BY_ADMIN', value: config.ORGANIZATION_ID_BY_ADMIN },
+      { key: 'ORGANIZATION_ID_BY_TESTER', value: config.ORGANIZATION_ID_BY_TESTER },
+      { key: 'ACHIEVEMENTS_PROVIDER_ID_BY_ADMIN', value: config.ACHIEVEMENTS_PROVIDER_ID_BY_ADMIN },
+      { key: 'ACHIEVEMENTS_PROVIDER_ID_BY_TESTER', value: config.ACHIEVEMENTS_PROVIDER_ID_BY_TESTER },
+      { key: 'ATTRIBUTE_GROUP_ID_BY_ADMIN', value: config.ATTRIBUTE_GROUP_ID_BY_ADMIN },
+      { key: 'ATTRIBUTE_GROUP_ID_BY_TESTER', value: config.ATTRIBUTE_GROUP_ID_BY_TESTER },
+      { key: 'ATTRIBUTE_ID_BY_ADMIN', value: config.ATTRIBUTE_ID_BY_ADMIN },
+      { key: 'ATTRIBUTE_ID_BY_TESTER', value: config.ATTRIBUTE_ID_BY_TESTER },
+      { key: 'ACHIEVEMENT_ID_BY_ADMIN', value: config.ACHIEVEMENT_ID_BY_ADMIN },
+      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER },
+    )
+  } else if (testCases === 'project-api') {
+    originalEnvVars.push(
+      { key: 'ADMIN_ID', value: config.ADMIN_ID },
+      { key: 'USER_ID', value: config.USER_ID },
+      { key: 'COPILOT_ID', value: config.COPILOT_ID },
+      { key: 'POSTMAN_UPLOADED_FILES_PATH', value: config.POSTMAN_UPLOADED_FILES_PATH },
+      { key: 'POSTMAN_S3_BUCKET', value: config.POSTMAN_S3_BUCKET },
+    )
+  } else {
+    //
+  }
+
   const options = {
     collection: collectionPath,
     exportEnvironment: environmentPath,
@@ -136,7 +202,12 @@ async function runTests (requests, collectionPath, environmentPath) {
     delete require.cache[environmentPath]
     options.environment = require(environmentPath)
     options.folder = request.folder
-    options.iterationData = request.iterationData
+    options.iterationData = _.map(request.iterationData, data => {
+      if(data.requestBody) {
+        data.requestBody = JSON.stringify(data.requestBody)
+      }
+      return data
+    })
     try {
       const requestStart = Date.now()
       const results = await runner(options)
