@@ -84,7 +84,7 @@ async function getAdminToken () {
    * Get manager token from V3 API
    * @returns {String} The manager token
    */
- async function getManagerToken () {
+async function getManagerToken () {
   const v2 = await getUserTokenV2(config.MANAGER_CREDENTIALS_USERNAME, config.MANAGER_CREDENTIALS_PASSWORD)
   const v3 = await getUserTokenV3(v2.id_token, v2.refresh_token)
   return _.get(v3, 'result.content.token')

@@ -34,7 +34,7 @@ const runner = (options) => new Promise((resolve, reject) => {
 
 /**
  * Sleep for the given time
- * @param ms the miliseconds
+ * @param ms the milliseconds
  * @returns {Promise<unknown>}
  */
 function sleep (ms) {
@@ -109,7 +109,7 @@ function outputResults (startTime) {
  * Run the postman tests.
  * @param requests the postman requests
  * @param collectionPath the file path of the postman collection
- * @param environmentPath the file path of the postman collection
+ * @param environmentPath the file path of the postman environment
  * @return {Promise<void>}
  */
 async function runTests (requests, collectionPath, environmentPath) {
@@ -117,7 +117,7 @@ async function runTests (requests, collectionPath, environmentPath) {
   await checkConfigFiles()
   // how many tests/iterations in the requests provided ?
   let tests = 0
-  for (req of requests) {
+  for (const req of requests) {
     if (req.iterationData) {
       tests += req.iterationData.length
     } else {
@@ -137,13 +137,13 @@ async function runTests (requests, collectionPath, environmentPath) {
     { key: 'admin_token', value: `Bearer ${adminToken}` },
     { key: 'manager_token', value: `Bearer ${managerToken}` },
     { key: 'copilot_token', value: `Bearer ${copilotToken}` },
-    { key: 'user_token', value: `Bearer ${userToken}` },
+    { key: 'user_token', value: `Bearer ${userToken}` }
   ]
   // Apps that set `Bearer ` prefix themselves
   const haveBearerPrefix = [
     'Ubahn-api',
     'project-api'
-  ];
+  ]
   const testCases = require(environmentPath).name
   if (haveBearerPrefix.includes(testCases)) {
     originalEnvVars = [
@@ -152,7 +152,7 @@ async function runTests (requests, collectionPath, environmentPath) {
       { key: 'admin_token', value: `${adminToken}` },
       { key: 'manager_token', value: `${managerToken}` },
       { key: 'copilot_token', value: `${copilotToken}` },
-      { key: 'user_token', value: `${userToken}` },
+      { key: 'user_token', value: `${userToken}` }
     ]
   }
   if (testCases === 'Ubahn-api') {
@@ -174,7 +174,7 @@ async function runTests (requests, collectionPath, environmentPath) {
       { key: 'ATTRIBUTE_ID_BY_ADMIN', value: config.ATTRIBUTE_ID_BY_ADMIN },
       { key: 'ATTRIBUTE_ID_BY_TESTER', value: config.ATTRIBUTE_ID_BY_TESTER },
       { key: 'ACHIEVEMENT_ID_BY_ADMIN', value: config.ACHIEVEMENT_ID_BY_ADMIN },
-      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER },
+      { key: 'ACHIEVEMENT_ID_BY_TESTER', value: config.ACHIEVEMENT_ID_BY_TESTER }
     )
   } else if (testCases === 'project-api') {
     originalEnvVars.push(
@@ -182,7 +182,7 @@ async function runTests (requests, collectionPath, environmentPath) {
       { key: 'USER_ID', value: config.USER_ID },
       { key: 'COPILOT_ID', value: config.COPILOT_ID },
       { key: 'POSTMAN_UPLOADED_FILES_PATH', value: config.POSTMAN_UPLOADED_FILES_PATH },
-      { key: 'POSTMAN_S3_BUCKET', value: config.POSTMAN_S3_BUCKET },
+      { key: 'POSTMAN_S3_BUCKET', value: config.POSTMAN_S3_BUCKET }
     )
   } else {
     //
@@ -203,7 +203,7 @@ async function runTests (requests, collectionPath, environmentPath) {
     options.environment = require(environmentPath)
     options.folder = request.folder
     options.iterationData = _.map(request.iterationData, data => {
-      if(data.requestBody) {
+      if (data.requestBody) {
         data.requestBody = JSON.stringify(data.requestBody)
       }
       return data
