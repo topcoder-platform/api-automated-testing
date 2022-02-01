@@ -18,7 +18,7 @@
     "newman": "^5.2.3",
     "newman-reporter-html": "^1.0.5",
     "tc-core-library-js": "appirio-tech/tc-core-library-js.git#v2.6.4",
-    "winston": "^3.3.3"
+    "winston": "^3.4.0"
   },
   "devDependencies": {
     "standard": "^12.0.1"
