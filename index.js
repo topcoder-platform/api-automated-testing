@@ -142,7 +142,8 @@ async function runTests (requests, collectionPath, environmentPath) {
   // Apps that set `Bearer ` prefix themselves
   const haveBearerPrefix = [
     'Ubahn-api',
-    'project-api'
+    'project-api',
+    'resource-api'
   ]
   const testCases = require(environmentPath).name
   if (haveBearerPrefix.includes(testCases)) {
