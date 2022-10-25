@@ -143,7 +143,8 @@ async function runTests (requests, collectionPath, environmentPath) {
   const haveBearerPrefix = [
     'Ubahn-api',
     'project-api',
-    'resource-api'
+    'resource-api',
+    'groups-api'
   ]
   const testCases = require(environmentPath).name
   if (haveBearerPrefix.includes(testCases)) {
