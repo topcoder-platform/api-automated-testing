@@ -15,7 +15,7 @@
     "handlebars": "^4.7.7",
     "joi": "^17.4.0",
     "lodash": "^4.17.21",
-    "newman": "^5.2.3",
+    "newman": "^5.2.4",
     "newman-reporter-html": "^1.0.5",
     "tc-core-library-js": "topcoder-platform/tc-core-library-js.git#v2.6.4",
     "winston": "^3.3.3"
