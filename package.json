@@ -10,7 +10,7 @@
   "author": "TCSCODER",
   "license": "none",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.22.0",
     "config": "^3.3.6",
     "handlebars": "^4.7.7",
     "joi": "^17.4.0",
